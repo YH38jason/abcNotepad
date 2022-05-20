@@ -1,0 +1,14 @@
+{
+    "cn":
+    {
+        "save":"保存",
+        "open":"打开",
+        "title":"文本编辑器"
+    },
+    "en":
+    {
+        "save":"save",
+        "open":"open",
+        "title":"Text editor"
+    }
+}
