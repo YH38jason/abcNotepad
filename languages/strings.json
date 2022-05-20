@@ -1,8 +1,6 @@
 {
     "cn":
     {
-        "save":"保存",
-        "open":"打开",
         "title":"文本编辑器",
         "prompt":"提示",
         "error":"错误",
@@ -16,8 +14,6 @@
     },
     "en":
     {
-        "save":"save",
-        "open":"open",
         "title":"Text editor",
         "prompt":"prompt",
         "error":"error",
@@ -26,6 +22,7 @@
         "not-save":"You haven't saved yet! Are you sure you want to exit?",
         "not-open":"You did not open the file",
         "p1":"The file could not be opened'",
-        "p2":"'This may not be a file!"
+        "p2":"'This may not be a file!",
+        "no-input":"You did not enter the file path"
     }
 }
