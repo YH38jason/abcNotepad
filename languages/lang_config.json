@@ -1,4 +1,5 @@
 {
+    "# 语言相关配置":"lang_config.json",
     "default_lang":"en",
     "中文":"cn"
 }
