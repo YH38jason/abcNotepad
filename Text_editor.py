@@ -2,6 +2,7 @@
 import wx
 from tkinter import messagebox
 from tkinter import Tk
+
 window = Tk()
 window.withdraw()
 
@@ -12,10 +13,12 @@ class MainFrame(wx.Frame):
         self.file_path = ''
         self.is_open = False
         super().__init__(None, title='文本编辑器', size=(1000, 800))
+        # 创建菜单
+        bar = wx.MenuBar
         # 创建面板
         panel = wx.Panel(self)
         # 创建文本框
-        self.tc = wx.TextCtrl(panel, style=wx.TE_MULTILINE)
+        self.tc = wx.TextCtrl(panel, style=wx.TE_MULTILINE) 
         self.text_c = wx.TextCtrl(panel)
         # 创建按钮
         save_b = wx.Button(panel, label='保存')
@@ -38,15 +41,15 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.open_file, open_b)
         # 显示窗口
         self.Show()
+
     # 保存文件
 
     def save_file(self, event):
         if not self.is_open:
             messagebox.showinfo(title='提示', message='你没有打开文件')
             return
-        with open(self.file_path, 'w') as f:
-            text = self.tc.GetValue()
-            f.write(text)
+        self.file_i = self.tc.GetValue()
+
     # 打开文件
 
     def open_file(self, event):
@@ -68,7 +71,7 @@ class MainFrame(wx.Frame):
             print(f'无法打开文件\'{self.file_path}\'，这也许不是一个文件！')
 
 
-def OnClose(event):
+def Close(event):
     try:
         if not main_frame.is_open:
             main_frame.Destroy()
@@ -87,5 +90,5 @@ def OnClose(event):
 if __name__ == '__main__':
     app = wx.App()
     main_frame = MainFrame()
-    main_frame.Bind(wx.EVT_CLOSE, OnClose)
+    main_frame.Bind(wx.EVT_CLOSE, Close)
     app.MainLoop()
