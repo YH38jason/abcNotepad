@@ -14,26 +14,26 @@ class MainFrame(wx.Frame):
         self.file_path = ''
         self.is_open = False
         super().__init__(None, title=strings['title'], size=(1000, 800))
-        # 创建菜单
-        bar = wx.MenuBar
+        save_p = wx.Image("images\save.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+        open_p = wx.Image("images\open.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
         # 创建面板
         panel = wx.Panel(self)
         # 创建文本框
         self.tc = wx.TextCtrl(panel, style=wx.TE_MULTILINE) 
         self.text_c = wx.TextCtrl(panel)
         # 创建按钮
-        save_b = wx.Button(panel, label=strings["save"])
-        open_b = wx.Button(panel, label=strings["open"])
+        save_b = wx.BitmapButton(panel, bitmap=save_p)
+        open_b = wx.BitmapButton(panel, bitmap=open_p)
 
         # 添加容器
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         vbox = wx.BoxSizer(wx.VERTICAL)
         # 将控件添加至容器
         vbox.Add(hbox, proportion=0, flag=wx.EXPAND, border=0)
-        hbox.Add(save_b, proportion=0, flag=wx.ALIGN_LEFT | wx.ALL, border=10)
-        hbox.Add(open_b, proportion=0, flag=wx.ALL, border=10)
+        hbox.Add(save_b, proportion=0, flag=wx.ALIGN_LEFT | wx.ALL, border=5)
+        hbox.Add(open_b, proportion=0, flag=wx.ALL, border=5)
         vbox.Add(self.tc, proportion=5, flag=wx.EXPAND | wx.ALL, border=20)
-        hbox.Add(self.text_c, proportion=1, flag=wx.ALL, border=10)
+        hbox.Add(self.text_c, proportion=1, flag=wx.ALL, border=5)
         # 设置面板布局
         panel.SetSizer(vbox)
 
