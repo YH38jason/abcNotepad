@@ -2,7 +2,8 @@
 import wx
 from tkinter import messagebox
 from tkinter import Tk
-
+import sys
+import json
 window = Tk()
 window.withdraw()
 
@@ -12,7 +13,7 @@ class MainFrame(wx.Frame):
         self.file_i = ''
         self.file_path = ''
         self.is_open = False
-        super().__init__(None, title='文本编辑器', size=(1000, 800))
+        super().__init__(None, title=strings['title'], size=(1000, 800))
         # 创建菜单
         bar = wx.MenuBar
         # 创建面板
@@ -21,8 +22,8 @@ class MainFrame(wx.Frame):
         self.tc = wx.TextCtrl(panel, style=wx.TE_MULTILINE) 
         self.text_c = wx.TextCtrl(panel)
         # 创建按钮
-        save_b = wx.Button(panel, label='保存')
-        open_b = wx.Button(panel, label='打开')
+        save_b = wx.Button(panel, label=strings["save"])
+        open_b = wx.Button(panel, label=strings["open"])
 
         # 添加容器
         hbox = wx.BoxSizer(wx.HORIZONTAL)
@@ -75,19 +76,30 @@ def Close(event):
     try:
         if not main_frame.is_open:
             main_frame.Destroy()
-            print('程序已关闭')
-            exit()
-        if main_frame.text_c.GetValue() != main_frame.file_i:
+            sys.exit()
+        if main_frame.tc.GetValue() != main_frame.file_i:
             choose = messagebox.askyesno(title='提示', message='您还没有保存！确定退出吗？')
             if choose:
                 main_frame.Destroy()
-                print('程序已关闭')
-                exit()
+                sys.exit()
+            else:
+                return
+        with open(main_frame.file_path, 'w') as f:
+            text = main_frame.tc.GetValue()
+            f.write(text)
+        main_frame.Destroy()
+        print('程序已关闭')
+        sys.exit()
     except FileNotFoundError:
         main_frame.Destroy()
-
+        print('程序已关闭')
+        sys.exit()
 
 if __name__ == '__main__':
+    with open('languages\lang_config.json', 'r', encoding='utf-8') as lc:
+        lconfig = json.load(lc)
+        ls = open('languages\strings.json', 'r', encoding='utf-8')
+        strings=json.load(ls)["cn"]
     app = wx.App()
     main_frame = MainFrame()
     main_frame.Bind(wx.EVT_CLOSE, Close)
