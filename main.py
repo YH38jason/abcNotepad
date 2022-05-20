@@ -47,7 +47,7 @@ class MainFrame(wx.Frame):
 
     def save_file(self, event):
         if not self.is_open:
-            messagebox.showinfo(title='提示', message='你没有打开文件')
+            messagebox.showinfo(title=strings["prompt"], message=strings['not-open'])
             return
         self.file_i = self.tc.GetValue()
 
@@ -56,8 +56,7 @@ class MainFrame(wx.Frame):
     def open_file(self, event):
         self.file_path = self.text_c.GetValue()
         if self.file_path == '':
-            print('未输入路径！')
-            messagebox.showinfo(title='提示', message='你没有输入文件路径！')
+            messagebox.showinfo(title=strings["prompt"], message=strings['no-input'])
             return
         try:
             with open(self.file_path, 'r') as f:
@@ -65,11 +64,9 @@ class MainFrame(wx.Frame):
                 self.tc.SetValue(self.file_i)
             self.is_open = True
         except FileNotFoundError:
-            messagebox.showerror(title='错误', message=f'未找到文件\'{self.file_path}\'')
-            print('未找到文件{}'.format(self.file_path))
+            messagebox.showerror(title=strings['error'], message=strings["not-found1"]+""+self.file_path+strings['not-found2'])
         except PermissionError:
-            messagebox.showerror(title='错误', message=f'无法打开文件\'{self.file_path}\'，这也许不是一个文件！')
-            print(f'无法打开文件\'{self.file_path}\'，这也许不是一个文件！')
+            messagebox.showerror(title=strings['error'], message=strings['p1']+self.file_path+strings['p2'])
 
 
 def Close(event):
@@ -78,7 +75,7 @@ def Close(event):
             main_frame.Destroy()
             sys.exit()
         if main_frame.tc.GetValue() != main_frame.file_i:
-            choose = messagebox.askyesno(title='提示', message='您还没有保存！确定退出吗？')
+            choose = messagebox.askyesno(title=strings["prompt"], message=strings["not-save"])
             if choose:
                 main_frame.Destroy()
                 sys.exit()
@@ -88,18 +85,16 @@ def Close(event):
             text = main_frame.tc.GetValue()
             f.write(text)
         main_frame.Destroy()
-        print('程序已关闭')
         sys.exit()
     except FileNotFoundError:
         main_frame.Destroy()
-        print('程序已关闭')
         sys.exit()
 
 if __name__ == '__main__':
     with open('languages\lang_config.json', 'r', encoding='utf-8') as lc:
         lconfig = json.load(lc)
         ls = open('languages\strings.json', 'r', encoding='utf-8')
-        strings=json.load(ls)["cn"]
+        strings=json.load(ls)[lconfig['default_lang']]
     app = wx.App()
     main_frame = MainFrame()
     main_frame.Bind(wx.EVT_CLOSE, Close)

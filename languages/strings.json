@@ -3,12 +3,29 @@
     {
         "save":"保存",
         "open":"打开",
-        "title":"文本编辑器"
+        "title":"文本编辑器",
+        "prompt":"提示",
+        "error":"错误",
+        "not-found1":"未找到文件",
+        "not-found2":"。",
+        "not-save":"您还没有保存！确定退出吗？",
+        "not-open":"你没有打开文件",
+        "no-input":"你没有输入文件路径",
+        "p1":"无法打开文件",
+        "p2":"这也许不是一个文件！"
     },
     "en":
     {
         "save":"save",
         "open":"open",
-        "title":"Text editor"
+        "title":"Text editor",
+        "prompt":"prompt",
+        "error":"error",
+        "not-found1":"file'",
+        "not-found2":"'not found.",
+        "not-save":"You haven't saved yet! Are you sure you want to exit?",
+        "not-open":"You did not open the file",
+        "p1":"The file could not be opened'",
+        "p2":"'This may not be a file!"
     }
 }
