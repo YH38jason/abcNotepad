@@ -14,7 +14,9 @@
         "setting":"设置",
         "lang-set":"界面语言",
         "apply":"应用",
-        "determine":"确定"
+        "determine":"确定",
+        "history":"历史",
+        "can-not-open-hf":"无法打开该文件。该文件可能已经被移动或删除"
     },
     "en":
     {
@@ -31,6 +33,8 @@
         "setting":"setting",
         "lang-set":"Interface language",
         "apply":"Apply",
-        "determine":"determine"
+        "determine":"determine",
+        "history":"history",
+        "can-not-open-hf":"The file cannot be opened. The file may have been moved or deleted"
     }
 }
