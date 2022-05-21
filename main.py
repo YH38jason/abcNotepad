@@ -1,5 +1,5 @@
 # coding=utf-8
-import os
+from secrets import choice
 from turtle import settiltangle
 import wx
 from tkinter import VERTICAL, messagebox
@@ -7,6 +7,7 @@ from tkinter import Tk
 import sys
 import json
 import sqlite3
+import os
 window = Tk()
 window.withdraw()
 app = wx.App()
@@ -17,6 +18,7 @@ setting_p = wx.Image("images\\setting.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap(
 his_p = wx.Image("images\\history.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 icon = wx.Icon('images\icon.png', wx.BITMAP_TYPE_PNG)
 icon2 = wx.Icon('images\setting.png', wx.BITMAP_TYPE_PNG)
+icon3 = wx.Icon("images\\history.png", wx.BITMAP_TYPE_PNG)
 
 class MainFrame(wx.Frame):
     def __init__(self):
@@ -30,7 +32,7 @@ class MainFrame(wx.Frame):
         panel = wx.Panel(self)
         # 创建文本框
         self.tc = wx.TextCtrl(panel, style=wx.TE_MULTILINE) 
-        self.text_c = wx.TextCtrl(panel)
+        self.path_tc = wx.TextCtrl(panel)
         # 创建按钮
         save_b = wx.BitmapButton(panel, bitmap=save_p)
         open_b = wx.BitmapButton(panel, bitmap=open_p)
@@ -45,7 +47,7 @@ class MainFrame(wx.Frame):
         hbox.Add(open_b, proportion=0, flag=wx.ALL, border=5)
         hbox.Add(setting_b, proportion=0, flag=wx.ALL, border=5)
         vbox.Add(self.tc, proportion=5, flag=wx.EXPAND | wx.ALL, border=20)
-        hbox.Add(self.text_c, proportion=1, flag=wx.ALL, border=5)
+        hbox.Add(self.path_tc, proportion=1, flag=wx.ALL, border=5)
         hbox.Add(his_b, proportion=0, flag=wx.ALL, border=5)
         # 设置面板布局
         panel.SetSizer(vbox)
@@ -54,6 +56,7 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.open_file, open_b)
         self.Bind(wx.EVT_BUTTON, self.open_setting, setting_b)
         self.Bind(wx.EVT_CLOSE, Close)
+        self.Bind(wx.EVT_BUTTON, self.open_history,his_b)
         # 显示窗口
         self.Show()
 
@@ -68,12 +71,12 @@ class MainFrame(wx.Frame):
     # 打开文件
 
     def open_file(self, event):
-        self.file_path = self.text_c.GetValue()
+        self.file_path = self.path_tc.GetValue()
         if self.file_path == '':
             messagebox.showinfo(title=strings["prompt"], message=strings['no-input'])
             return
         try:
-            with open(self.file_path, 'r') as f:
+            with open(self.file_path, 'r', encoding='utf-8') as f:
                 self.file_i = f.read()
                 self.tc.SetValue(self.file_i)
             self.is_open = True
@@ -81,10 +84,24 @@ class MainFrame(wx.Frame):
             messagebox.showerror(title=strings['error'], message=strings["not-found1"]+""+self.file_path+strings['not-found2'])
         except PermissionError:
             messagebox.showerror(title=strings['error'], message=strings['p1']+self.file_path+strings['p2'])
-    
+    # 从路径打开文件
+    def open_from_path(self, p):
+        self.file_path = p
+        try:
+            with open(self.file_path, 'r', encoding='utf-8') as f:
+                self.file_i = f.read()
+                self.tc.SetValue(self.file_i)
+            self.is_open = True
+        except FileNotFoundError:
+            messagebox.showerror(title=strings['error'], message=strings["can-not-open-hf"])
+            self.path_tc.SetValue('')
+        
     # 打开设置
     def open_setting(self, event):
         setting_frame=SettingFrame()
+    # 打开历史
+    def open_history(self, event):
+        history_frame=HistoryFrame()
 # 设置        
 class SettingFrame(wx.Frame):
     def __init__(self):
@@ -116,10 +133,31 @@ class SettingFrame(wx.Frame):
             self.Destroy()
 class HistoryFrame(wx.Frame):
     def __init__(self):
-        super().__init__(main_frame, title=strings['setting'], size=(300,400))
+        super().__init__(main_frame, title=strings['history'], size=(300,400))
         panel=wx.Panel(self)
+        self.SetIcon(icon3)
+        self.Center()
+        hlist = get_all_history()
+        self.plist = []
+        self.nlist = []
+        for h in hlist:
+            i1, i2 = h
+            self.nlist.append(i1)
+            self.plist.append(i2)
+        self.list_box = wx.ListBox(panel, choices=self.nlist, style=wx.LB_SINGLE)
+        apply_b = wx.Button(panel, label=strings['apply'])
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        vbox.Add(self.list_box,proportion=7,flag=wx.EXPAND|wx.ALL, border=5)
+        vbox.Add(apply_b, proportion=1, flag=wx.ALL | wx.ALIGN_RIGHT, border=5)
+        panel.SetSizer(vbox)
+        self.Bind(wx.EVT_BUTTON, self.use_history_file, apply_b)
+        self.Show()
+    def use_history_file(self, event):
+        restart()
+        p = self.plist[self.list_box.GetSelection()]
+        main_frame.path_tc.SetValue(p)
+        main_frame.open_from_path(p)
 def Close(event):
-    con.close()
     try:
         if not main_frame.is_open:
             main_frame.Destroy()
@@ -131,6 +169,10 @@ def Close(event):
                 sys.exit()
             else:
                 return
+        _, fn = os.path.split(main_frame.file_path)
+        print(fn)
+        AddHistoryFile(path=main_frame.file_path, file_name=fn)
+        con.close()
         with open(main_frame.file_path, 'w') as f:
             text = main_frame.tc.GetValue()
             f.write(text)
@@ -149,10 +191,15 @@ def restart():
 def AddHistoryFile(file_name, path):
     cursor.execute("INSERT INTO history VALUES(?, ?)", (file_name, path))
     con.commit()
-
+# 删除历史
 def delete_all():
     cursor.execute("truncate history")
     con.commit()
+# 获取历史
+def get_all_history():
+    command = 'SELECT file_name, path FROM history'
+    cursor.execute(command)
+    return cursor.fetchall()
 
 if __name__ == '__main__':
     # 连接数据库
