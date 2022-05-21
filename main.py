@@ -6,9 +6,17 @@ from tkinter import VERTICAL, messagebox
 from tkinter import Tk
 import sys
 import json
+import sqlite3
 window = Tk()
 window.withdraw()
-
+app = wx.App()
+# 构建图片
+save_p = wx.Image("images\\save.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+open_p = wx.Image("images\\open.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+setting_p = wx.Image("images\\setting.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+his_p = wx.Image("images\\history.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+icon = wx.Icon('images\icon.png', wx.BITMAP_TYPE_PNG)
+icon2 = wx.Icon('images\setting.png', wx.BITMAP_TYPE_PNG)
 
 class MainFrame(wx.Frame):
     def __init__(self):
@@ -16,9 +24,8 @@ class MainFrame(wx.Frame):
         self.file_path = ''
         self.is_open = False
         super().__init__(None, title=strings['title'], size=(1000, 800))
-        save_p = wx.Image("images\save.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
-        open_p = wx.Image("images\open.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
-        setting_p = wx.Image("images\setting.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()      
+        self.SetIcon(icon)
+        self.Centre()
         # 创建面板
         panel = wx.Panel(self)
         # 创建文本框
@@ -28,6 +35,7 @@ class MainFrame(wx.Frame):
         save_b = wx.BitmapButton(panel, bitmap=save_p)
         open_b = wx.BitmapButton(panel, bitmap=open_p)
         setting_b = wx.BitmapButton(panel, bitmap=setting_p)
+        his_b = wx.BitmapButton(panel, bitmap=his_p)
         # 添加容器
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -38,9 +46,9 @@ class MainFrame(wx.Frame):
         hbox.Add(setting_b, proportion=0, flag=wx.ALL, border=5)
         vbox.Add(self.tc, proportion=5, flag=wx.EXPAND | wx.ALL, border=20)
         hbox.Add(self.text_c, proportion=1, flag=wx.ALL, border=5)
+        hbox.Add(his_b, proportion=0, flag=wx.ALL, border=5)
         # 设置面板布局
         panel.SetSizer(vbox)
-
         # 绑定事件
         self.Bind(wx.EVT_BUTTON, self.save_file, save_b)
         self.Bind(wx.EVT_BUTTON, self.open_file, open_b)
@@ -82,6 +90,8 @@ class SettingFrame(wx.Frame):
     def __init__(self):
         super().__init__(main_frame, title=strings['setting'], size=(300,400))
         panel=wx.Panel(self)
+        self.Centre()
+        self.SetIcon(icon2)
         self.cbox=wx.ComboBox(panel, value='中文', choices=lang_list)
         stext=wx.StaticText(panel, label=strings['lang-set'])
         vbox=wx.BoxSizer(wx.VERTICAL)
@@ -104,7 +114,12 @@ class SettingFrame(wx.Frame):
             ls.close()
             restart()
             self.Destroy()
+class HistoryFrame(wx.Frame):
+    def __init__(self):
+        super().__init__(main_frame, title=strings['setting'], size=(300,400))
+        panel=wx.Panel(self)
 def Close(event):
+    con.close()
     try:
         if not main_frame.is_open:
             main_frame.Destroy()
@@ -125,13 +140,25 @@ def Close(event):
         main_frame.Destroy()
         sys.exit()
 
-
 def restart():
     global main_frame
     main_frame.Destroy()
     main_frame = MainFrame()
 
+# 添加历史
+def AddHistoryFile(file_name, path):
+    cursor.execute("INSERT INTO history VALUES(?, ?)", (file_name, path))
+    con.commit()
+
+def delete_all():
+    cursor.execute("truncate history")
+    con.commit()
+
 if __name__ == '__main__':
+    # 连接数据库
+    con = sqlite3.connect('data.db')
+    cursor = con.cursor()
+    # 初始化字符串文件
     with open('languages\lang_config.json', 'r', encoding='utf-8') as lc:
         lconfig = json.load(lc)
         ls = open('languages\strings.json', 'r', encoding='utf-8')
@@ -139,6 +166,5 @@ if __name__ == '__main__':
         strings=json.load(ls)[lang]
         ls.close()
     lang_list=lconfig['languages']
-    app = wx.App()
     main_frame = MainFrame()
     app.MainLoop()
