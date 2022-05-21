@@ -1,8 +1,6 @@
 # coding=utf-8
-from secrets import choice
-from turtle import settiltangle
 import wx
-from tkinter import VERTICAL, messagebox
+from tkinter import messagebox
 from tkinter import Tk
 import sys
 import json
@@ -125,10 +123,12 @@ class SettingFrame(wx.Frame):
             global strings
             global lang
             strings=json.load(ls)[lconfig[self.cbox.GetValue()]]
+            
         except json.decoder.JSONDecodeError as e:
             print(f'json Error:{e}')
         finally:
             ls.close()
+            self.configf.close()
             restart()
             self.Destroy()
 class HistoryFrame(wx.Frame):
@@ -174,7 +174,6 @@ def Close(event):
             else:
                 return
         _, fn = os.path.split(main_frame.file_path)
-        print(fn)
         AddHistoryFile(path=main_frame.file_path, file_name=fn)
         con.close()
         with open(main_frame.file_path, 'w') as f:
