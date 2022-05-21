@@ -1,6 +1,8 @@
 # coding=utf-8
+import os
+from turtle import settiltangle
 import wx
-from tkinter import messagebox
+from tkinter import VERTICAL, messagebox
 from tkinter import Tk
 import sys
 import json
@@ -16,6 +18,7 @@ class MainFrame(wx.Frame):
         super().__init__(None, title=strings['title'], size=(1000, 800))
         save_p = wx.Image("images\save.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
         open_p = wx.Image("images\open.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+        setting_p = wx.Image("images\setting.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()      
         # 创建面板
         panel = wx.Panel(self)
         # 创建文本框
@@ -24,7 +27,7 @@ class MainFrame(wx.Frame):
         # 创建按钮
         save_b = wx.BitmapButton(panel, bitmap=save_p)
         open_b = wx.BitmapButton(panel, bitmap=open_p)
-
+        setting_b = wx.BitmapButton(panel, bitmap=setting_p)
         # 添加容器
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -32,6 +35,7 @@ class MainFrame(wx.Frame):
         vbox.Add(hbox, proportion=0, flag=wx.EXPAND, border=0)
         hbox.Add(save_b, proportion=0, flag=wx.ALIGN_LEFT | wx.ALL, border=5)
         hbox.Add(open_b, proportion=0, flag=wx.ALL, border=5)
+        hbox.Add(setting_b, proportion=0, flag=wx.ALL, border=5)
         vbox.Add(self.tc, proportion=5, flag=wx.EXPAND | wx.ALL, border=20)
         hbox.Add(self.text_c, proportion=1, flag=wx.ALL, border=5)
         # 设置面板布局
@@ -40,6 +44,8 @@ class MainFrame(wx.Frame):
         # 绑定事件
         self.Bind(wx.EVT_BUTTON, self.save_file, save_b)
         self.Bind(wx.EVT_BUTTON, self.open_file, open_b)
+        self.Bind(wx.EVT_BUTTON, self.open_setting, setting_b)
+        self.Bind(wx.EVT_CLOSE, Close)
         # 显示窗口
         self.Show()
 
@@ -67,8 +73,37 @@ class MainFrame(wx.Frame):
             messagebox.showerror(title=strings['error'], message=strings["not-found1"]+""+self.file_path+strings['not-found2'])
         except PermissionError:
             messagebox.showerror(title=strings['error'], message=strings['p1']+self.file_path+strings['p2'])
-
-
+    
+    # 打开设置
+    def open_setting(self, event):
+        setting_frame=SettingFrame()
+# 设置        
+class SettingFrame(wx.Frame):
+    def __init__(self):
+        super().__init__(main_frame, title=strings['setting'], size=(300,400))
+        panel=wx.Panel(self)
+        self.cbox=wx.ComboBox(panel, value='中文', choices=lang_list)
+        stext=wx.StaticText(panel, label=strings['lang-set'])
+        vbox=wx.BoxSizer(wx.VERTICAL)
+        cbutton=wx.Button(panel, label=strings['determine'])
+        vbox.Add(stext, flag=wx.ALL|wx.ALIGN_LEFT|wx.ALL, border=5)
+        vbox.Add(self.cbox, proportion=0, flag=wx.EXPAND | wx.ALL, border=5)
+        vbox.Add(cbutton, flag=wx.ALIGN_RIGHT|wx.ALL, border=5)
+        self.Bind(wx.EVT_BUTTON, self.determine, cbutton)
+        panel.SetSizer(vbox)
+        self.Show()
+    def determine(self, event):
+        try:
+            ls = open('languages\strings.json', 'r', encoding='utf-8')
+            global strings
+            global lang
+            strings=json.load(ls)[lconfig[self.cbox.GetValue()]]
+        except json.decoder.JSONDecodeError as e:
+            print(f'json Error:{e}')
+        finally:
+            ls.close()
+            restart()
+            self.Destroy()
 def Close(event):
     try:
         if not main_frame.is_open:
@@ -90,12 +125,20 @@ def Close(event):
         main_frame.Destroy()
         sys.exit()
 
+
+def restart():
+    global main_frame
+    main_frame.Destroy()
+    main_frame = MainFrame()
+
 if __name__ == '__main__':
     with open('languages\lang_config.json', 'r', encoding='utf-8') as lc:
         lconfig = json.load(lc)
         ls = open('languages\strings.json', 'r', encoding='utf-8')
-        strings=json.load(ls)[lconfig['default_lang']]
+        lang = lconfig['default_lang']
+        strings=json.load(ls)[lang]
+        ls.close()
+    lang_list=lconfig['languages']
     app = wx.App()
     main_frame = MainFrame()
-    main_frame.Bind(wx.EVT_CLOSE, Close)
     app.MainLoop()
