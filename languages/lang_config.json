@@ -1,5 +1,11 @@
 {
     "# 语言相关配置":"lang_config.json",
-    "default_lang":"en",
-    "中文":"cn"
+    "default_lang":"cn",
+    "中文":"cn",
+    "English":"en",
+    "languages":
+    [
+        "中文",
+        "English"
+    ]
 }

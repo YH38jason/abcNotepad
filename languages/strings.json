@@ -10,7 +10,11 @@
         "not-open":"你没有打开文件",
         "no-input":"你没有输入文件路径",
         "p1":"无法打开文件",
-        "p2":"这也许不是一个文件！"
+        "p2":"这也许不是一个文件！",
+        "setting":"设置",
+        "lang-set":"界面语言",
+        "apply":"应用",
+        "determine":"确定"
     },
     "en":
     {
@@ -23,6 +27,10 @@
         "not-open":"You did not open the file",
         "p1":"The file could not be opened'",
         "p2":"'This may not be a file!",
-        "no-input":"You did not enter the file path"
+        "no-input":"You did not enter the file path",
+        "setting":"setting",
+        "lang-set":"Interface language",
+        "apply":"Apply",
+        "determine":"determine"
     }
 }
