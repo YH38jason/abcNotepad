@@ -153,6 +153,10 @@ class HistoryFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.use_history_file, apply_b)
         self.Show()
     def use_history_file(self, event):
+        if self.list_box.GetSelection() == -1:
+           self.Destroy()
+           return
+        self.Destroy()
         restart()
         p = self.plist[self.list_box.GetSelection()]
         main_frame.path_tc.SetValue(p)
