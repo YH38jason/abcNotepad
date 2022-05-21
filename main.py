@@ -110,11 +110,14 @@ class SettingFrame(wx.Frame):
         self.cbox=wx.ComboBox(panel, value='中文', choices=lang_list)
         stext=wx.StaticText(panel, label=strings['lang-set'])
         vbox=wx.BoxSizer(wx.VERTICAL)
+        delb = wx.Button(panel, label=strings['del-his'])
         cbutton=wx.Button(panel, label=strings['determine'])
         vbox.Add(stext, flag=wx.ALL|wx.ALIGN_LEFT|wx.ALL, border=5)
         vbox.Add(self.cbox, proportion=0, flag=wx.EXPAND | wx.ALL, border=5)
+        vbox.Add(delb, flag=wx.ALL|wx.ALIGN_RIGHT, border=5)
         vbox.Add(cbutton, flag=wx.ALIGN_RIGHT|wx.ALL, border=5)
         self.Bind(wx.EVT_BUTTON, self.determine, cbutton)
+        self.Bind(wx.EVT_BUTTON, self.delete_history, delb)
         panel.SetSizer(vbox)
         self.Show()
     def determine(self, event):
@@ -128,9 +131,10 @@ class SettingFrame(wx.Frame):
             print(f'json Error:{e}')
         finally:
             ls.close()
-            self.configf.close()
             restart()
             self.Destroy()
+    def delete_history(self, event):
+        delete_all()
 class HistoryFrame(wx.Frame):
     def __init__(self):
         super().__init__(main_frame, title=strings['history'], size=(300,400))
@@ -189,6 +193,8 @@ def restart():
     global main_frame
     main_frame.Destroy()
     main_frame = MainFrame()
+    main_frame.tc.SetValue(main_frame.file_i)
+    main_frame.path_tc.SetValue(main_frame.file_path)
 
 # 添加历史
 def AddHistoryFile(file_name, path):
@@ -196,7 +202,7 @@ def AddHistoryFile(file_name, path):
     con.commit()
 # 删除历史
 def delete_all():
-    cursor.execute("truncate history")
+    cursor.execute("DELETE FROM history")
     con.commit()
 # 获取历史
 def get_all_history():
