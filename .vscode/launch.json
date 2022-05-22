@@ -5,7 +5,7 @@
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
-            "program": "main.py",
+            "program": "main.pyw",
             "console": "integratedTerminal",
             "justMyCode": true
         }

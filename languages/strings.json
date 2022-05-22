@@ -18,7 +18,11 @@
         "history":"历史",
         "can-not-open-hf":"无法打开该文件。该文件可能已经被移动或删除",
         "add-th-when-quit":"退出时添加至历史记录",
-        "del-his":"清空历史记录"
+        "del-his":"清空历史记录",
+        "select-file":"选择文件",
+        "new":"新建文件",
+        "select-path":"选择路径",
+        "name":"文件名称:"
     },
     "en":
     {
@@ -39,6 +43,10 @@
         "history":"history",
         "can-not-open-hf":"The file cannot be opened. The file may have been moved or deleted",
         "add-th-when-quit":"Add to history on exit",
-        "del-his":"Empty history"
+        "del-his":"Empty history",
+        "select-file":"select file",
+        "new":"new-file",
+        "select-path":"select path",
+        "name":"file name:"
     }
 }
