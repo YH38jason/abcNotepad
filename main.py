@@ -1,4 +1,5 @@
 # coding=utf-8
+from email import message
 import wx
 import sys
 import json
@@ -26,7 +27,7 @@ class MainFrame(wx.Frame):
         panel = wx.Panel(self)
         # 创建文本框
         self.tc = wx.TextCtrl(panel, style=wx.TE_MULTILINE) 
-        self.path_tc = wx.FilePickerCtrl(panel)
+        self.path_tc = wx.FilePickerCtrl(panel, message="选择文件", name='浏览')
         # 创建按钮
         save_b = wx.BitmapButton(panel, bitmap=save_p)
         open_b = wx.BitmapButton(panel, bitmap=open_p)
