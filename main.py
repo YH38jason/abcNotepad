@@ -1,13 +1,9 @@
 # coding=utf-8
 import wx
-from tkinter import messagebox
-from tkinter import Tk
 import sys
 import json
 import sqlite3
 import os
-window = Tk()
-window.withdraw()
 app = wx.App()
 # 构建图片
 save_p = wx.Image("images\\save.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
@@ -30,7 +26,7 @@ class MainFrame(wx.Frame):
         panel = wx.Panel(self)
         # 创建文本框
         self.tc = wx.TextCtrl(panel, style=wx.TE_MULTILINE) 
-        self.path_tc = wx.TextCtrl(panel)
+        self.path_tc = wx.FilePickerCtrl(panel)
         # 创建按钮
         save_b = wx.BitmapButton(panel, bitmap=save_p)
         open_b = wx.BitmapButton(panel, bitmap=open_p)
@@ -62,16 +58,16 @@ class MainFrame(wx.Frame):
 
     def save_file(self, event):
         if not self.is_open:
-            messagebox.showinfo(title=strings["prompt"], message=strings['not-open'])
+            wx.MessageBox(strings['not-open'],strings["prompt"],wx.ICON_INFORMATION)
             return
         self.file_i = self.tc.GetValue()
 
     # 打开文件
 
     def open_file(self, event):
-        self.file_path = self.path_tc.GetValue()
+        self.file_path = self.path_tc.GetPath()
         if self.file_path == '':
-            messagebox.showinfo(title=strings["prompt"], message=strings['no-input'])
+            wx.MessageBox(strings['no-input'],strings["prompt"], wx.ICON_INFORMATION)
             return
         try:
             with open(self.file_path, 'r', encoding='utf-8') as f:
@@ -79,9 +75,9 @@ class MainFrame(wx.Frame):
                 self.tc.SetValue(self.file_i)
             self.is_open = True
         except FileNotFoundError:
-            messagebox.showerror(title=strings['error'], message=strings["not-found1"]+""+self.file_path+strings['not-found2'])
+            wx.MessageBox(strings["not-found1"]+""+self.file_path+strings['not-found2'],strings['error'],wx.ICON_ERROR)
         except PermissionError:
-            messagebox.showerror(title=strings['error'], message=strings['p1']+self.file_path+strings['p2'])
+            wx.Messagebox(strings['p1']+self.file_path+strings['p2'], strings['error'], wx.ICON_ERROR)
     # 从路径打开文件
     def open_from_path(self, p):
         self.file_path = p
@@ -91,7 +87,7 @@ class MainFrame(wx.Frame):
                 self.tc.SetValue(self.file_i)
             self.is_open = True
         except FileNotFoundError:
-            messagebox.showerror(title=strings['error'], message=strings["can-not-open-hf"])
+            messagebox.showerror(strings["can-not-open-hf"], strings['error'],wx.ICON_ERROR)
             self.path_tc.SetValue('')
         
     # 打开设置
@@ -171,8 +167,8 @@ def Close(event):
             main_frame.Destroy()
             sys.exit()
         if main_frame.tc.GetValue() != main_frame.file_i:
-            choose = messagebox.askyesno(title=strings["prompt"], message=strings["not-save"])
-            if choose:
+            choose = wx.MessageBox(strings["not-save"], strings["prompt"], wx.OK | wx.CANCEL | wx.ICON_WARNING)
+            if choose == 4:
                 main_frame.Destroy()
                 sys.exit()
             else:
