@@ -88,7 +88,7 @@ class MainFrame(wx.Frame):
                 self.tc.SetValue(self.file_i)
             self.is_open = True
         except FileNotFoundError:
-            messagebox.showerror(strings["can-not-open-hf"], strings['error'],wx.ICON_ERROR)
+            wx.MessageBox(strings['error'], strings["can-not-open-hf"],wx.ICON_ERROR)
             self.path_tc.SetValue('')
         
     # 打开设置
