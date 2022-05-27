@@ -34,7 +34,7 @@ class MainFrame(wx.Frame):
         open_b = wx.BitmapButton(panel, bitmap=open_p)
         setting_b = wx.BitmapButton(panel, bitmap=setting_p)
         his_b = wx.BitmapButton(panel, bitmap=his_p)
-        new_b = wx.BitmapButton(panel, bitmap=new_p)
+        new_b = wx.BitmapButton(panel, bitmap=new_p) 
         # 添加容器
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -44,7 +44,7 @@ class MainFrame(wx.Frame):
         hbox.Add(open_b, proportion=0, flag=wx.ALL, border=5)
         hbox.Add(new_b, proportion=0, flag=wx.ALL, border=5)
         hbox.Add(his_b, proportion=0, flag=wx.ALL, border=5)
-        vbox.Add(self.tc, proportion=5, flag=wx.EXPAND | wx.ALL, border=20)
+        vbox.Add(self.tc, proportion=5, flag=wx.EXPAND | wx.ALL, border=5)
         hbox.Add(self.path_tc, proportion=1, flag=wx.ALL, border=5)
         hbox.Add(setting_b, proportion=0, flag=wx.ALL, border=5)
         # 设置面板布局
@@ -97,12 +97,12 @@ class MainFrame(wx.Frame):
         
     # 打开设置
     def open_setting(self, event):
-        setting_frame=SettingFrame()
+        self.setting_frame=SettingFrame()
     # 打开历史
     def open_history(self, event):
-        history_frame=HistoryFrame()
+        self.history_frame=HistoryFrame()
     def new_file(self, event):
-        nf = NewFileFrame()
+        self.nf = NewFileFrame()
 # 设置        
 class SettingFrame(wx.Frame):
     def __init__(self):
@@ -115,9 +115,11 @@ class SettingFrame(wx.Frame):
         vbox=wx.BoxSizer(wx.VERTICAL)
         delb = wx.Button(panel, label=strings['del-his'])
         cbutton=wx.Button(panel, label=strings['determine'])
+        abutton = wx.Button(panel, label=strings['about'])
         vbox.Add(stext, flag=wx.ALL|wx.ALIGN_LEFT|wx.ALL, border=5)
         vbox.Add(self.cbox, proportion=0, flag=wx.EXPAND | wx.ALL, border=5)
         vbox.Add(delb, flag=wx.ALL|wx.ALIGN_RIGHT, border=5)
+        vbox.Add(abutton, flag=wx.ALIGN_RIGHT|wx.ALL, border=5)
         vbox.Add(cbutton, flag=wx.ALIGN_RIGHT|wx.ALL, border=5)
         self.Bind(wx.EVT_BUTTON, self.determine, cbutton)
         self.Bind(wx.EVT_BUTTON, self.delete_history, delb)
@@ -191,13 +193,24 @@ class NewFileFrame(wx.Frame):
         panel.SetSizer(vbox)
         self.Center()
         self.Show()
-    
     def create(self, event):
-        new_file_path = self.fpk.GetValue()+self.ntc.GetValue()
-        f = open(new_file_path, 'w')
-        f.close()
-        self.Destroy()
-        main_frame.open_from_path(new_file_path)
+        try:
+            new_file_path = self.fpk.GetValue()+self.ntc.GetValue()
+            if new_file_path == '':
+                wx.MessageBox(strings['no-input'], strings['prompt'], wx.ICON_INFORMATION)
+                self.Destroy()
+                return
+            f = open(new_file_path, 'w')
+            f.close()
+            self.Destroy()
+            main_frame.open_from_path(new_file_path)
+        except FileNotFoundError:
+            wx.MessageBox(strings['not-found1'], strings['prompt'], wx.ICON_INFORMATION)
+class AboutFrame(wx.Frame):
+    def __init__(self):
+        super().__init__(None, title=strings['about'])
+        panel = wx.Panel(self)
+        stbmp = wx.StaticBitmap(panel, bitmap='')
 def Close(event):
     try:
         if not main_frame.is_open:

@@ -1,7 +1,7 @@
 {
     "cn":
     {
-        "title":"文本编辑器",
+        "title":"abcNotepad",
         "prompt":"提示",
         "error":"错误",
         "not-found1":"未找到文件",
@@ -22,11 +22,12 @@
         "select-file":"选择文件",
         "new":"新建文件",
         "select-path":"选择路径",
-        "name":"文件名称:"
+        "name":"文件名称:",
+        "about":"关于应用"
     },
     "en":
     {
-        "title":"Text editor",
+        "title":"AbcNotePad",
         "prompt":"prompt",
         "error":"error",
         "not-found1":"file'",
@@ -47,6 +48,7 @@
         "select-file":"select file",
         "new":"new-file",
         "select-path":"select path",
-        "name":"file name:"
+        "name":"file name:",
+        "about":"About"
     }
 }
