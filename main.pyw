@@ -1,10 +1,10 @@
 # coding=utf-8
-from email import message
 import wx
 import sys
 import json
 import sqlite3
 import os
+import webbrowser
 app = wx.App()
 # 构建图片
 save_p = wx.Image("images\\save.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
@@ -12,9 +12,11 @@ open_p = wx.Image("images\\open.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 setting_p = wx.Image("images\\setting.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 his_p = wx.Image("images\\history.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 new_p = wx.Image("images\\new.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+about_p = wx.Image("images\icon-200x200.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 icon = wx.Icon('images\icon.png', wx.BITMAP_TYPE_PNG)
 icon2 = wx.Icon('images\setting.png', wx.BITMAP_TYPE_PNG)
 icon3 = wx.Icon("images\\history.png", wx.BITMAP_TYPE_PNG)
+icon4 = wx.Icon('images\\about.png', wx.BITMAP_TYPE_PNG)
 
 class MainFrame(wx.Frame):
     def __init__(self):
@@ -123,6 +125,7 @@ class SettingFrame(wx.Frame):
         vbox.Add(cbutton, flag=wx.ALIGN_RIGHT|wx.ALL, border=5)
         self.Bind(wx.EVT_BUTTON, self.determine, cbutton)
         self.Bind(wx.EVT_BUTTON, self.delete_history, delb)
+        self.Bind(wx.EVT_BUTTON, self.open_about, abutton)
         panel.SetSizer(vbox)
         self.Show()
     def determine(self, event):
@@ -140,6 +143,8 @@ class SettingFrame(wx.Frame):
             self.Destroy()
     def delete_history(self, event):
         delete_all()
+    def open_about(self, event):
+        self.about = AboutFrame()
 class HistoryFrame(wx.Frame):
     def __init__(self):
         super().__init__(main_frame, title=strings['history'], size=(300,400))
@@ -208,19 +213,40 @@ class NewFileFrame(wx.Frame):
             wx.MessageBox(strings['not-found1'], strings['prompt'], wx.ICON_INFORMATION)
 class AboutFrame(wx.Frame):
     def __init__(self):
-        super().__init__(None, title=strings['about'])
+        super().__init__(None, title=strings['about'], size=(400, 500))
         panel = wx.Panel(self)
-        stbmp = wx.StaticBitmap(panel, bitmap='')
+        self.SetIcon(icon4)
+        stbmp = wx.StaticBitmap(panel, bitmap=about_p)
+        t1 = wx.StaticText(panel, label=strings['a1'])
+        t2 = wx.StaticText(panel, label=strings['icc'])
+        github_button = wx.Button(panel, label='Github')
+        bilibili_button = wx.Button(panel, label='Bilibili')
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        hbox = wx.BoxSizer(wx.HORIZONTAL)
+        hbox2 = wx.BoxSizer(wx.HORIZONTAL)
+        vbox.Add(hbox, proportion=1,flag=wx.EXPAND)
+        vbox.Add(hbox2, proportion=1,flag=wx.EXPAND)
+        vbox.Add(t2, proportion=6,flag=wx.ALL, border=20)
+        hbox2.Add(github_button, flag=wx.ALL, border=10)
+        hbox2.Add(bilibili_button, flag=wx.ALL, border=10)
+        hbox.Add(stbmp, proportion=1, flag=wx.ALL, border=10)
+        hbox.Add(t1, proportion=4, flag=wx.TOP|wx.BOTTOM, border=30)
+        panel.SetSizer(vbox)
+        self.Bind(wx.EVT_BUTTON, self.github, github_button)
+        self.Bind(wx.EVT_BUTTON, self.bilibili, bilibili_button)
+        self.Show()
+    def github(self, event):
+        webbrowser.open('https://github.com/YH38jason/abcNotepad')
+    def bilibili(self, event):
+        webbrowser.open('https://space.bilibili.com/1306084387')
 def Close(event):
     try:
         if not main_frame.is_open:
-            main_frame.Destroy()
-            sys.exit()
+            EXIT()
         if main_frame.tc.GetValue() != main_frame.file_i:
             choose = wx.MessageBox(strings["not-save"], strings["prompt"], wx.OK | wx.CANCEL | wx.ICON_WARNING)
             if choose == 4:
-                main_frame.Destroy()
-                sys.exit()
+                EXIT()
             else:
                 return
         _, fn = os.path.split(main_frame.file_path)
@@ -229,12 +255,14 @@ def Close(event):
         with open(main_frame.file_path, 'w') as f:
             text = main_frame.tc.GetValue()
             f.write(text)
-        main_frame.Destroy()
-        sys.exit()
+        EXIT()
     except FileNotFoundError:
-        main_frame.Destroy()
-        sys.exit()
+        EXIT()
 
+def EXIT():
+    main_frame.Destroy()
+    sys.exit()
+    
 def restart():
     global main_frame
     main_frame.Destroy()
