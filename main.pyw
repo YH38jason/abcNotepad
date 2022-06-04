@@ -105,11 +105,12 @@ class MainFrame(wx.Frame):
         except FileNotFoundError:
             wx.MessageBox(strings['error'], strings["can-not-open-hf"] ,wx.ICON_ERROR)
             self.path_tc.SetValue('')
-    # 查找
+    # 打开查找窗口
     def FindShow(self, event):
         self.data = wx.FindReplaceData()
         self.dlg = wx.FindReplaceDialog(self.tc, self.data, 'Find')
         self.dlg.Show()
+    # 查找
     def OnFind(self, event):
         pos = 0
         txt = self.tc.GetValue()
