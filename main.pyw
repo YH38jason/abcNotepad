@@ -13,7 +13,9 @@ setting_p = wx.Image("images\\setting.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap(
 his_p = wx.Image("images\\history.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 new_p = wx.Image("images\\new.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 about_p = wx.Image("images\icon-200x200.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
-icon = wx.Icon('images\icon.png', wx.BITMAP_TYPE_PNG)
+find_p = wx.Image("images\\find.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+replace_p = wx.Image('images\\replace.png', wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+icon = wx.Icon('images\\icon.png', wx.BITMAP_TYPE_PNG)
 icon2 = wx.Icon('images\setting.png', wx.BITMAP_TYPE_PNG)
 icon3 = wx.Icon("images\\history.png", wx.BITMAP_TYPE_PNG)
 icon4 = wx.Icon('images\\about.png', wx.BITMAP_TYPE_PNG)
@@ -29,17 +31,19 @@ class MainFrame(wx.Frame):
         # 创建面板
         panel = wx.Panel(self)
         # 创建文本框
-        self.tc = wx.TextCtrl(panel, style=wx.TE_MULTILINE) 
+        self.tc = wx.TextCtrl(panel, style=wx.TE_MULTILINE|wx.TE_RICH2) 
         self.path_tc = wx.FilePickerCtrl(panel, message=strings['select-file'])
         # 创建按钮
         save_b = wx.BitmapButton(panel, bitmap=save_p)
         open_b = wx.BitmapButton(panel, bitmap=open_p)
         setting_b = wx.BitmapButton(panel, bitmap=setting_p)
         his_b = wx.BitmapButton(panel, bitmap=his_p)
-        new_b = wx.BitmapButton(panel, bitmap=new_p) 
+        new_b = wx.BitmapButton(panel, bitmap=new_p)
+        find_b = wx.BitmapButton(panel, bitmap=find_p)
         # 添加容器
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         vbox = wx.BoxSizer(wx.VERTICAL)
+        hbox2 = wx.BoxSizer()
         # 将控件添加至容器
         vbox.Add(hbox, proportion=0, flag=wx.EXPAND, border=0)
         hbox.Add(save_b, proportion=0, flag=wx.ALIGN_LEFT | wx.ALL, border=5)
@@ -49,6 +53,8 @@ class MainFrame(wx.Frame):
         vbox.Add(self.tc, proportion=5, flag=wx.EXPAND | wx.ALL, border=5)
         hbox.Add(self.path_tc, proportion=1, flag=wx.ALL, border=5)
         hbox.Add(setting_b, proportion=0, flag=wx.ALL, border=5)
+        hbox2.Add(find_b)
+        vbox.Add(hbox2, flag=wx.ALL | wx.EXPAND, border=5)
         # 设置面板布局
         panel.SetSizer(vbox)
         # 绑定事件
@@ -58,8 +64,11 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, Close)
         self.Bind(wx.EVT_BUTTON, self.open_history,his_b)
         self.Bind(wx.EVT_BUTTON, self.new_file, new_b)
+        self.Bind(wx.EVT_BUTTON, self.FindShow, find_b)
+        self.Bind(wx.EVT_FIND, self.OnFind)
         # 显示窗口
         self.Show()
+        
 
     # 保存文件
 
@@ -96,7 +105,18 @@ class MainFrame(wx.Frame):
         except FileNotFoundError:
             wx.MessageBox(strings['error'], strings["can-not-open-hf"] ,wx.ICON_ERROR)
             self.path_tc.SetValue('')
-        
+    # 查找
+    def FindShow(self, event):
+        self.data = wx.FindReplaceData()
+        self.dlg = wx.FindReplaceDialog(self.tc, self.data, 'Find')
+        self.dlg.Show()
+    def OnFind(self, event):
+        pos = 0
+        txt = self.tc.GetValue()
+        ftxt = self.data.GetFindString()          
+        pos = txt.find(ftxt, pos)
+        size = len(ftxt) 
+        self.tc.SetStyle(pos, pos+size, wx.TextAttr("white", "blue"))
     # 打开设置
     def open_setting(self, event):
         self.setting_frame=SettingFrame()
