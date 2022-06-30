@@ -21,6 +21,7 @@ new_p = wx.Image("images\\new.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 about_p = wx.Image("images\icon-200x200.png",
                    wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 find_p = wx.Image("images\\find.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+tran_p = wx.Image("images/translate.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 replace_p = wx.Image('images\\replace.png',
                      wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 icon = wx.Icon('images\\icon.png', wx.BITMAP_TYPE_PNG)
@@ -49,7 +50,8 @@ class MainFrame(wx.Frame):
         setting_b = wx.BitmapButton(panel, bitmap=setting_p)
         his_b = wx.BitmapButton(panel, bitmap=his_p)
         new_b = wx.BitmapButton(panel, bitmap=new_p)
-        self.find_tc = wx.TextCtrl(panel, size=(200, 20))
+        self.find_tc = wx.TextCtrl(panel, size=(200, 28))
+        tran_b = wx.BitmapButton(panel, bitmap=tran_p)
         # 添加容器
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -65,6 +67,7 @@ class MainFrame(wx.Frame):
         hbox.Add(setting_b, proportion=0, flag=wx.ALL, border=5)
         hbox2.Add(self.find_tc)
         vbox.Add(hbox2, flag=wx.ALL | wx.EXPAND, border=5)
+        hbox2.Add(tran_b)
         # 设置面板布局
         panel.SetSizer(vbox)
         # 绑定事件
@@ -74,7 +77,8 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, Close)
         self.Bind(wx.EVT_BUTTON, self.open_history, his_b)
         self.Bind(wx.EVT_BUTTON, self.new_file, new_b)
-        self.Bind(wx.EVT_HOTKEY, self.OnHotkey, id=self.key)
+        self.Bind(wx.EVT_HOTKEY, self.OnFindHotkey, id=self.key)
+        self.Bind(wx.EVT_BUTTON, self.OnTran, tran_b)
         # self.Bind(wx.EVT_BUTTON, self.FindShow, find_b)
         # self.Bind(wx.EVT_FIND, self.OnFind)
         # 显示窗口
@@ -132,18 +136,34 @@ class MainFrame(wx.Frame):
     def new_file(self, event):
         self.nf = NewFileFrame()
 
-    def FindShow(self, event):
-        self.find_frame = FindFrame()
-        self.find_frame.Show()
+    # def FindShow(self, event):
+    #     self.find_frame = FindFrame()
+    #     self.find_frame.Show()
 
-    def OnHotkey(self, event):
+    # 按下查找热键
+    def OnFindHotkey(self, event):
         nftxt: str = main_frame.tc.GetValue()
         sele: int = nftxt.find(self.find_tc.GetValue())
         if sele == -1:
-            wx.MessageBox(strings["not-found-txt"].format(self.find_tc.GetValue()), strings['prompt'], wx.ICON_INFORMATION)
+            wx.MessageBox(strings["not-found-txt"].format(self.find_tc.GetValue()),
+                          strings['prompt'], wx.ICON_INFORMATION)
         main_frame.tc.SetSelection(sele, sele+len(self.find_tc.GetValue()))
+    # 翻译
+    def OnTran(self, event):
+        try:
+            trantxt = self.tc.GetValue()
+            if trantxt == '':
+                return
+            results = translate(trantxt)
+            with open(strings['tranre']+'.txt', 'w', encoding='utf-8') as f:
+                f.write(results)
+        except requests.exceptions.JSONDecodeError:
+            return
+        except requests.exceptions.ConnectionError:
+            wx.MessageBox(strings['cb'], strings['error'], wx.ICON_ERROR)
+            return
+        
 # 设置
-
 
 class SettingFrame(wx.Frame):
     def __init__(self):
