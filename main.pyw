@@ -155,7 +155,7 @@ class MainFrame(wx.Frame):
             if trantxt == '':
                 return
             results = translate(trantxt)
-            with open(strings['tranre']+'.txt', 'w', encoding='utf-8') as f:
+            with open('translate/'+strings['tranre']+'.txt', 'w', encoding='utf-8') as f:
                 f.write(results)
         except requests.exceptions.JSONDecodeError:
             return
