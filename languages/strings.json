@@ -28,11 +28,13 @@
         "icc":"应用中所有图标均来源于iconfont.cn\n著作权归原作者所有!",
         "find":"查找",
         "case":"区分大小写",
-        "not-found-txt":"未找到\"{}\""
+        "not-found-txt":"未找到\"{}\"",
+        "tranre":"翻译结果",
+        "cb":"翻译失败，网络可能未连接"
     },
     "en":
     {
-        "title":"AbcNotepad",
+        "title":"abcNotepad",
         "prompt":"prompt",
         "error":"error",
         "not-found1":"file'",
@@ -59,6 +61,8 @@
         "icc":"All icons in the app are from iconfont.cn\ncopyright belongs to the original author!",
         "find":"Find",
         "case":"case sensitive",
-        "not-found-txt":"\"{}\" not found."
+        "not-found-txt":"\"{}\" not found.",
+        "tranre":"translate result",
+        "cb":"Translation fails, the network may not be connected."
     }
 }
