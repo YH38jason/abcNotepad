@@ -18,7 +18,7 @@ setting_p = wx.Image("images\\setting.png",
                      wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 his_p = wx.Image("images\\history.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 new_p = wx.Image("images\\new.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
-about_p = wx.Image("images\icon-200x200.png",
+about_p = wx.Image("images/icon-200x200.png",
                    wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 find_p = wx.Image("images\\find.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 tran_p = wx.Image("images/translate.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
@@ -35,7 +35,8 @@ class MainFrame(wx.Frame):
         self.file_i = ''
         self.file_path = ''
         self.is_open = False
-        super().__init__(None, title=strings['title'], size=(1000, 800))
+        self.file_name = ''
+        super().__init__(None, title=strings['title'], size=(800, 600))
         self.SetIcon(icon)
         self.Centre()
         self.key = wx.NewIdRef()
@@ -103,6 +104,8 @@ class MainFrame(wx.Frame):
         try:
             with open(self.file_path, 'r', encoding='utf-8') as f:
                 self.file_i = f.read()
+                _, self.file_name = os.path.split(self.file_path)
+                self.SetTitle('{}-{}'.format(strings['title'], self.file_name))
                 self.tc.SetValue(self.file_i)
             self.is_open = True
         except FileNotFoundError:
