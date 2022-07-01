@@ -149,6 +149,7 @@ class MainFrame(wx.Frame):
                           strings['prompt'], wx.ICON_INFORMATION)
         main_frame.tc.SetSelection(sele, sele+len(self.find_tc.GetValue()))
     # 翻译
+
     def OnTran(self, event):
         try:
             trantxt = self.tc.GetValue()
@@ -162,8 +163,9 @@ class MainFrame(wx.Frame):
         except requests.exceptions.ConnectionError:
             wx.MessageBox(strings['cb'], strings['error'], wx.ICON_ERROR)
             return
-        
+
 # 设置
+
 
 class SettingFrame(wx.Frame):
     def __init__(self):
@@ -428,7 +430,7 @@ if __name__ == '__main__':
     # 连接数据库
     con = sqlite3.connect('data.db')
     cursor = con.cursor()
-    # 初始化字符串文件
+    # 读取字符串json文件
     with open('languages\lang_config.json', 'r', encoding='utf-8') as lc:
         lconfig = json.load(lc)
         ls = open('languages\strings.json', 'r', encoding='utf-8')
