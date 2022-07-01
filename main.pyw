@@ -39,8 +39,15 @@ class MainFrame(wx.Frame):
         super().__init__(None, title=strings['title'], size=(800, 600))
         self.SetIcon(icon)
         self.Centre()
-        self.key = wx.NewIdRef()
-        self.RegisterHotKey(self.key, wx.MOD_ALT, wx.WXK_DOWN)         # 创建面板
+        self.key_find = wx.NewIdRef()
+        self.key_save = wx.NewIdRef()
+        self.key_open = wx.NewIdRef()
+        self.key_exit = wx.NewIdRef()
+        self.RegisterHotKey(self.key_find, wx.MOD_ALT,
+                            wx.WXK_DOWN)         # 创建面板
+        self.RegisterHotKey(self.key_save, wx.MOD_ALT, wx.WXK_UP)
+        self.RegisterHotKey(self.key_open, wx.MOD_ALT, wx.WXK_LEFT)
+        self.RegisterHotKey(self.key_exit, wx.MOD_ALT, wx.WXK_ESCAPE)
         panel = wx.Panel(self)
         # 创建文本框
         self.tc = wx.TextCtrl(panel, style=wx.TE_MULTILINE)
@@ -78,8 +85,11 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_CLOSE, Close)
         self.Bind(wx.EVT_BUTTON, self.open_history, his_b)
         self.Bind(wx.EVT_BUTTON, self.new_file, new_b)
-        self.Bind(wx.EVT_HOTKEY, self.OnFindHotkey, id=self.key)
+        self.Bind(wx.EVT_HOTKEY, self.OnFindHotkey, id=self.key_find)
         self.Bind(wx.EVT_BUTTON, self.OnTran, tran_b)
+        self.Bind(wx.EVT_HOTKEY, self.save_file, id=self.key_save)
+        self.Bind(wx.EVT_HOTKEY, self.open_file, id=self.key_open)
+        self.Bind(wx.EVT_HOTKEY, Close, id=self.key_exit)
         # self.Bind(wx.EVT_BUTTON, self.FindShow, find_b)
         # self.Bind(wx.EVT_FIND, self.OnFind)
         # 显示窗口
@@ -121,6 +131,8 @@ class MainFrame(wx.Frame):
         try:
             with open(self.file_path, 'r', encoding='utf-8') as f:
                 self.file_i = f.read()
+                _, self.file_name = os.path.split(self.file_path)
+                self.SetTitle('{}-{}'.format(strings['title'], self.file_name))
                 self.tc.SetValue(self.file_i)
             self.is_open = True
         except FileNotFoundError:
@@ -334,7 +346,7 @@ class FindFrame(wx.Frame):
 
 
 def Close(event):
-    main_frame.UnregisterHotKey(main_frame.key)
+    main_frame.UnregisterHotKey(main_frame.key_find)
     try:
         if not main_frame.is_open:
             EXIT()
