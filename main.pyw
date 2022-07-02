@@ -36,6 +36,9 @@ class MainFrame(wx.Frame):
         self.file_path = ''
         self.is_open = False
         self.file_name = ''
+        self.isFind = False
+        self.index_list = []
+        self.find_index = 0
         super().__init__(None, title=strings['title'], size=(800, 600))
         self.SetIcon(icon)
         self.Centre()
@@ -44,7 +47,7 @@ class MainFrame(wx.Frame):
         self.key_open = wx.NewIdRef()
         self.key_exit = wx.NewIdRef()
         self.RegisterHotKey(self.key_find, wx.MOD_ALT,
-                            wx.WXK_DOWN)         # 创建面板
+                            wx.WXK_DOWN)
         self.RegisterHotKey(self.key_save, wx.MOD_ALT, wx.WXK_UP)
         self.RegisterHotKey(self.key_open, wx.MOD_ALT, wx.WXK_LEFT)
         self.RegisterHotKey(self.key_exit, wx.MOD_ALT, wx.WXK_ESCAPE)
@@ -60,6 +63,7 @@ class MainFrame(wx.Frame):
         new_b = wx.BitmapButton(panel, bitmap=new_p)
         self.find_tc = wx.TextCtrl(panel, size=(200, 28))
         tran_b = wx.BitmapButton(panel, bitmap=tran_p)
+        hk = wx.Button(panel, label=strings['hk'])
         # 添加容器
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -76,6 +80,7 @@ class MainFrame(wx.Frame):
         hbox2.Add(self.find_tc)
         vbox.Add(hbox2, flag=wx.ALL | wx.EXPAND, border=5)
         hbox2.Add(tran_b)
+        hbox2.Add(hk)
         # 设置面板布局
         panel.SetSizer(vbox)
         # 绑定事件
@@ -90,9 +95,14 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_HOTKEY, self.save_file, id=self.key_save)
         self.Bind(wx.EVT_HOTKEY, self.open_file, id=self.key_open)
         self.Bind(wx.EVT_HOTKEY, Close, id=self.key_exit)
+        self.Bind(wx.EVT_BUTTON, self.open_hotkeyzy, hk)
         # self.Bind(wx.EVT_BUTTON, self.FindShow, find_b)
         # self.Bind(wx.EVT_FIND, self.OnFind)
         # 显示窗口
+        self.is_setting_open = False
+        self.is_history_open = False
+        self.is_hotkeyzy_open = False
+        self.is_newfile_open = False
         self.Show()
 
     # 保存文件
@@ -102,6 +112,11 @@ class MainFrame(wx.Frame):
                           strings["prompt"], wx.ICON_INFORMATION)
             return
         self.file_i = self.tc.GetValue()
+
+    def open_hotkeyzy(self, event):
+        if not self.is_hotkeyzy_open:
+            self.hk_frame = HotKeyFrame()
+            self.is_hotkeyzy_open = True
 
     # 打开文件
 
@@ -142,14 +157,20 @@ class MainFrame(wx.Frame):
 
     # 打开设置
     def open_setting(self, event):
-        self.setting_frame = SettingFrame()
+        if not self.is_setting_open:
+            self.setting_frame = SettingFrame()
+            self.is_setting_open = True
     # 打开历史
 
     def open_history(self, event):
-        self.history_frame = HistoryFrame()
+        if not self.is_history_open:
+            self.history_frame = HistoryFrame()
+            self.is_setting_open = True
 
     def new_file(self, event):
-        self.nf = NewFileFrame()
+        if not self.is_newfile_open:
+            self.nf = NewFileFrame()
+            self.is_newfile_open = True
 
     # def FindShow(self, event):
     #     self.find_frame = FindFrame()
@@ -157,12 +178,34 @@ class MainFrame(wx.Frame):
 
     # 按下查找热键
     def OnFindHotkey(self, event):
+        if self.isFind:
+            self.FindLoop(self.index_list)
+            return
         nftxt: str = main_frame.tc.GetValue()
-        sele: int = nftxt.find(self.find_tc.GetValue())
-        if sele == -1:
-            wx.MessageBox(strings["not-found-txt"].format(self.find_tc.GetValue()),
-                          strings['prompt'], wx.ICON_INFORMATION)
-        main_frame.tc.SetSelection(sele, sele+len(self.find_tc.GetValue()))
+        # sele: int = nftxt.find(self.find_tc.GetValue())
+        index = nftxt.find(self.find_tc.GetValue())
+        self.index_list.append(index)
+        while index != -1:
+            index = nftxt.find(self.find_tc.GetValue(), index+1)
+            if index == -1:
+                break
+            self.index_list.append(index)
+        self.find_index = 0
+        self.isFind = True
+        self.FindLoop(self.index_list)
+            
+        # if sele == -1:
+        #     wx.MessageBox(strings["not-found-txt"].format(self.find_tc.GetValue()),
+        #                   strings['prompt'], wx.ICON_INFORMATION)
+        # main_frame.tc.SetSelection(sele, sele+len(self.find_tc.GetValue()))
+
+    def FindLoop(self, l:list):
+        if self.find_index == len(l):
+            self.isFind = False
+            return
+        long = len(self.find_tc.GetValue())
+        self.tc.SetSelection(l[self.find_index], l[self.find_index]+long)
+        self.find_index += 1
     # 翻译
 
     def OnTran(self, event):
@@ -202,6 +245,7 @@ class SettingFrame(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.determine, cbutton)
         self.Bind(wx.EVT_BUTTON, self.delete_history, delb)
         self.Bind(wx.EVT_BUTTON, self.open_about, abutton)
+        self.Bind(wx.EVT_CLOSE, self.close)
         panel.SetSizer(vbox)
         self.Show()
 
@@ -224,6 +268,9 @@ class SettingFrame(wx.Frame):
 
     def open_about(self, event):
         self.about = AboutFrame()
+    def close(self, event):
+        main_frame.is_setting_open = False
+        self.Destroy()
 
 
 class HistoryFrame(wx.Frame):
@@ -248,6 +295,7 @@ class HistoryFrame(wx.Frame):
         vbox.Add(apply_b, proportion=1, flag=wx.ALL | wx.ALIGN_RIGHT, border=5)
         panel.SetSizer(vbox)
         self.Bind(wx.EVT_BUTTON, self.use_history_file, apply_b)
+        self.Bind(wx.EVT_CLOSE, self.close)
         self.Show()
 
     def use_history_file(self, event):
@@ -259,6 +307,10 @@ class HistoryFrame(wx.Frame):
         p = self.plist[self.list_box.GetSelection()]
         main_frame.path_tc.SetPath(p)
         main_frame.open_from_path(p)
+    
+    def close(self, event):
+        main_frame.is_history_open = False
+        self.Destroy()
 
 
 class NewFileFrame(wx.Frame):
@@ -280,6 +332,7 @@ class NewFileFrame(wx.Frame):
         vbox.Add(hbox, flag=wx.EXPAND | wx.ALL, border=5)
         vbox.Add(b, flag=wx.ALL | wx.ALIGN_LEFT, border=5)
         self.Bind(wx.EVT_BUTTON, self.create, b)
+        self.Bind(wx.EVT_CLOSE, self.close)
         panel.SetSizer(vbox)
         self.Center()
         self.Show()
@@ -299,6 +352,9 @@ class NewFileFrame(wx.Frame):
         except FileNotFoundError:
             wx.MessageBox(strings['not-found1'],
                           strings['prompt'], wx.ICON_INFORMATION)
+    def close(self, event):
+        main_frame.is_newfile_open = False
+        self.Destroy()
 
 
 class AboutFrame(wx.Frame):
@@ -333,16 +389,16 @@ class AboutFrame(wx.Frame):
         webbrowser.open('https://space.bilibili.com/1306084387')
 
 
-class FindFrame(wx.Frame):
-    def __init__(self):
-        super().__init__(None, title=strings['find'], size=(379, 170))
-        self.panel = FindPanel(self)
-        self.Bind(wx.EVT_BUTTON, self.OnFind, self.panel.fb)
+# class FindFrame(wx.Frame):
+#     def __init__(self):
+#         super().__init__(None, title=strings['find'], size=(379, 170))
+#         self.panel = FindPanel(self)
+#         self.Bind(wx.EVT_BUTTON, self.OnFind, self.panel.fb)
 
-    def OnFind(self, event):
-        nftxt: str = main_frame.tc.GetValue()
-        sele: int = nftxt.find(self.panel.m_textCtrl2.GetValue())
-        main_frame.tc.SetSelection(0, 3)
+#     def OnFind(self, event):
+#         nftxt: str = main_frame.tc.GetValue()
+#         sele: int = nftxt.find(self.panel.m_textCtrl2.GetValue())
+#         main_frame.tc.SetSelection(0, 3)
 
 
 def Close(event):
@@ -407,7 +463,23 @@ def translate(txt: str):
     res = requests.post(url, data=data)
     return res.json()["translateResult"][0][0]['tgt']
 
-
+class HotKeyFrame(wx.Frame):
+    def __init__(self):
+        super().__init__(None, title=strings['hk'])
+        self.label = """1、退出:ALT+ESC  
+2、保存:ALT+方向键上  
+3、打开:ALT+方向键左
+"""
+        panel = wx.Panel(self)
+        hotkey_st = wx.StaticText(panel, label=self.label)
+        box = wx.BoxSizer()
+        box.Add(hotkey_st, proportion=1, flag=wx.EXPAND | wx.ALL, border=20)
+        panel.SetSizer(box)
+        self.Show()
+    def close(self, event):
+        main_frame.is_hotkeyzy_open = False
+        self.Destroy()
+        
 def EXIT():
     main_frame.Destroy()
     sys.exit()
