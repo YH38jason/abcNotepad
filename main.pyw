@@ -10,7 +10,10 @@ import sqlite3
 import os
 import webbrowser
 import requests
+
+version = '2.0 beta'
 app = wx.App()
+
 # 构建图片
 save_p = wx.Image("images\\save.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 open_p = wx.Image("images\\open.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
@@ -39,7 +42,7 @@ class MainFrame(wx.Frame):
         self.isFind = False
         self.index_list = []
         self.find_index = 0
-        super().__init__(None, title=strings['title'], size=(800, 600))
+        super().__init__(None, title=strings['title'].format(version), size=(800, 600))
         self.SetIcon(icon)
         self.Centre()
         self.key_find = wx.NewIdRef()
@@ -363,7 +366,7 @@ class AboutFrame(wx.Frame):
         panel = wx.Panel(self)
         self.SetIcon(icon4)
         stbmp = wx.StaticBitmap(panel, bitmap=about_p)
-        t1 = wx.StaticText(panel, label=strings['a1'])
+        t1 = wx.StaticText(panel, label=strings['a1'].format(version))
         t2 = wx.StaticText(panel, label=strings['icc'])
         github_button = wx.Button(panel, label='Github')
         bilibili_button = wx.Button(panel, label='Bilibili')

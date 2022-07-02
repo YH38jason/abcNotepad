@@ -1,7 +1,7 @@
 {
     "cn":
     {
-        "title":"abcNotepad",
+        "title":"abcNotepad {}",
         "prompt":"提示",
         "error":"错误",
         "not-found1":"未找到文件",
@@ -24,7 +24,7 @@
         "select-path":"选择路径",
         "name":"文件名称:",
         "about":"关于应用",
-        "a1":"abcNotepad v1.0 By YHjason\nemail jason20101230@outlook.com\n@bilibili 小聋瞎jason",
+        "a1":"abcNotepad {} By YHjason\nemail jason20101230@outlook.com\n@bilibili 小聋瞎jason",
         "icc":"应用中所有图标均来源于iconfont.cn\n著作权归原作者所有!",
         "find":"查找",
         "case":"区分大小写",
@@ -35,7 +35,7 @@
     },
     "en":
     {
-        "title":"abcNotepad",
+        "title":"abcNotepad {}",
         "prompt":"prompt",
         "error":"error",
         "not-found1":"file'",
@@ -58,7 +58,7 @@
         "select-path":"select path",
         "name":"file name:",
         "about":"About",
-        "a1":"abcNotepad v1.0 By YHjason\nemail jason20101230@outlook.com\n@bilibili 小聋瞎jason",
+        "a1":"abcNotepad {} By YHjason\nemail jason20101230@outlook.com\n@bilibili 小聋瞎jason",
         "icc":"All icons in the app are from iconfont.cn\ncopyright belongs to the original author!",
         "find":"Find",
         "case":"case sensitive",
