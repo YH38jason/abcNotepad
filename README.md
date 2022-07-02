@@ -1,6 +1,9 @@
 # abcNotepad 2
-一个十分普通的文本编辑器
+一个十分普通的文本编辑器  
 version 2.0 beta
+## 2.0全新版本
+目前还在测试  
+bug请反馈至jason20101230@outlook.com或3569094853@qq.com  
 ## 前置条件
 * wxPython
 * python 3.10
@@ -34,7 +37,8 @@ version 2.0 beta
 3、打开：ALT+方向键左
 ## 没人会看的联系方式
 本人邮箱
-jason20101230@outlook.com
+国外/国内邮箱：jason20101230@outlook.com  
+国内邮箱：3569094853@qq.com
 ## 已知bug
 *暂无*
 ## 软件截图
