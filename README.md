@@ -1,6 +1,6 @@
-# Python-文本编辑器（Wx）
+# abcNotepad 2
 一个十分普通的文本编辑器
-
+version 2.0 beta
 ## 前置条件
 * wxPython
 * python 3.10
