@@ -38,6 +38,12 @@ bug请反馈至jason20101230@outlook.com或3569094853@qq.com
 1、退出：ALT+ESC  
 2、保存：ALT+方向键上  
 3、打开：ALT+方向键左
+### 运行py文件
+按下下方三角形按钮即可  
+只能是python文件   
+**缺陷**:  
+1、无法显示错误  
+2、只能在运行完成后显示所有输出  
 ## 没人会看的联系方式
 本人邮箱
 国外/国内邮箱：jason20101230@outlook.com  
@@ -45,7 +51,7 @@ bug请反馈至jason20101230@outlook.com或3569094853@qq.com
 ## 已知bug
 *暂无*
 ## 软件截图
-![截图](images/screenshots.png "截图")
+![截图](images/screenshot-run.png "截图")
 ## 声明
 此软件为个人练习作品，绝非商用  
 软件中的按钮图标均来源于iconfont.cn  
