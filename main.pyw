@@ -10,8 +10,9 @@ import sqlite3
 import os
 import webbrowser
 import requests
+import threading
 
-version = '2.0 beta'
+version = '2.1'
 app = wx.App()
 
 # 构建图片
@@ -428,7 +429,7 @@ def Close(event):
         _, fn = os.path.split(main_frame.file_path)
         AddHistoryFile(path=main_frame.file_path, file_name=fn)
         con.close()
-        with open(main_frame.file_path, 'w') as f:
+        with open(main_frame.file_path, 'w', encoding='utf-8') as f:
             text = main_frame.tc.GetValue()
             f.write(text)
         EXIT()
@@ -498,19 +499,29 @@ class RunFileFrame(wx.Frame):
     def __init__(self):
         super().__init__(main_frame, title=strings['run'])
         panel = wx.Panel(self)
-        Terminal = wx.TextCtrl(panel, style=wx.TE_MULTILINE, value='Terminal output......')
-        Terminal.Enable(False)
+        self.output = ''
+        self.Terminal = wx.TextCtrl(panel, style=wx.TE_MULTILINE, value='Terminal output......')
+        self.Terminal.Enable(False)
         vbox = wx.BoxSizer(wx.VERTICAL)
-        vbox.Add(Terminal, flag=wx.ALL | wx.EXPAND, border=5, proportion=1)
-        if not main_frame.is_open:
-            wx.MessageBox(strings['not-open'], strings['prompt'], wx.ICON_INFORMATION)
+        vbox.Add(self.Terminal, flag=wx.ALL | wx.EXPAND, border=5, proportion=1)
         panel.SetSizer(vbox)
         self.Center()
+        if not main_frame.is_open:
+            wx.MessageBox(strings['not-open'], strings['prompt'], wx.ICON_INFORMATION)
+            return
+        _, file_type = os.path.splitext(main_frame.file_path)
+        if file_type != '.py':
+            wx.MessageBox(strings['not py'], strings['error'], wx.ICON_ERROR)
+            return
         self.Show()
 
-        output = os.popen('python '+main_frame.file_path).read()
-        Terminal.SetValue(output)
-        Terminal.Enable()
+        runt = threading.Thread(target=self.run)
+        runt.start()
+    
+    def run(self):
+        self.output = os.popen('python '+main_frame.file_path).read()
+        self.Terminal.SetValue(self.output)
+        self.Terminal.Enable()
 
 def EXIT():
     main_frame.Destroy()

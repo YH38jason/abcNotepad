@@ -32,7 +32,8 @@
         "tranre":"翻译结果",
         "cb":"翻译失败，网络可能未连接",
         "hk":"热键",
-        "run":"运行"
+        "run":"运行",
+        "not py":"这不是一个python文件!"
     },
     "en":
     {
@@ -67,6 +68,7 @@
         "tranre":"translate result",
         "cb":"Translation fails, the network may not be connected.",
         "hk":"hotkey",
-        "run":"Run"
+        "run":"Run",
+        "not py":"This is not a Python file!"
     }
 }
