@@ -31,7 +31,8 @@
         "not-found-txt":"未找到\"{}\"",
         "tranre":"翻译结果",
         "cb":"翻译失败，网络可能未连接",
-        "hk":"热键"
+        "hk":"热键",
+        "run":"运行"
     },
     "en":
     {
@@ -65,6 +66,7 @@
         "not-found-txt":"\"{}\" not found.",
         "tranre":"translate result",
         "cb":"Translation fails, the network may not be connected.",
-        "hk":"hotkey"
+        "hk":"hotkey",
+        "run":"Run"
     }
 }

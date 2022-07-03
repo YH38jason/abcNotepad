@@ -16,6 +16,9 @@ bug请反馈至jason20101230@outlook.com或3569094853@qq.com
 
 `pip install wxpython`
 
+## 打包命令
+`pyinstaller -F -w -i favicon.ico main.pyw`
+
 ## 添加语言
 ### 1、在strings.json中添加相应的字符串
 ### 2、在lang_config/languages中添加语言的缩写（如jp、en）

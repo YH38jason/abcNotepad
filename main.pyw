@@ -27,6 +27,7 @@ find_p = wx.Image("images\\find.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 tran_p = wx.Image("images/translate.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 replace_p = wx.Image('images\\replace.png',
                      wx.BITMAP_TYPE_PNG).ConvertToBitmap()
+run_p = wx.Image("images/run.png", wx.BITMAP_TYPE_PNG).ConvertToBitmap()
 icon = wx.Icon('images\\icon.png', wx.BITMAP_TYPE_PNG)
 icon2 = wx.Icon('images\setting.png', wx.BITMAP_TYPE_PNG)
 icon3 = wx.Icon("images\\history.png", wx.BITMAP_TYPE_PNG)
@@ -67,6 +68,7 @@ class MainFrame(wx.Frame):
         self.find_tc = wx.TextCtrl(panel, size=(200, 28))
         tran_b = wx.BitmapButton(panel, bitmap=tran_p)
         hk = wx.Button(panel, label=strings['hk'])
+        runb = wx.BitmapButton(panel, bitmap=run_p)
         # 添加容器
         hbox = wx.BoxSizer(wx.HORIZONTAL)
         vbox = wx.BoxSizer(wx.VERTICAL)
@@ -84,6 +86,7 @@ class MainFrame(wx.Frame):
         vbox.Add(hbox2, flag=wx.ALL | wx.EXPAND, border=5)
         hbox2.Add(tran_b)
         hbox2.Add(hk)
+        hbox2.Add(runb)
         # 设置面板布局
         panel.SetSizer(vbox)
         # 绑定事件
@@ -99,6 +102,7 @@ class MainFrame(wx.Frame):
         self.Bind(wx.EVT_HOTKEY, self.open_file, id=self.key_open)
         self.Bind(wx.EVT_HOTKEY, Close, id=self.key_exit)
         self.Bind(wx.EVT_BUTTON, self.open_hotkeyzy, hk)
+        self.Bind(wx.EVT_BUTTON, self.run, runb)
         # self.Bind(wx.EVT_BUTTON, self.FindShow, find_b)
         # self.Bind(wx.EVT_FIND, self.OnFind)
         # 显示窗口
@@ -106,6 +110,7 @@ class MainFrame(wx.Frame):
         self.is_history_open = False
         self.is_hotkeyzy_open = False
         self.is_newfile_open = False
+        self.is_runfile_open = False
         self.Show()
 
     # 保存文件
@@ -133,7 +138,7 @@ class MainFrame(wx.Frame):
             with open(self.file_path, 'r', encoding='utf-8') as f:
                 self.file_i = f.read()
                 _, self.file_name = os.path.split(self.file_path)
-                self.SetTitle('{}-{}'.format(strings['title'], self.file_name))
+                self.SetTitle('{}-{}'.format(strings['title'].format(version), self.file_name))
                 self.tc.SetValue(self.file_i)
             self.is_open = True
         except FileNotFoundError:
@@ -150,7 +155,7 @@ class MainFrame(wx.Frame):
             with open(self.file_path, 'r', encoding='utf-8') as f:
                 self.file_i = f.read()
                 _, self.file_name = os.path.split(self.file_path)
-                self.SetTitle('{}-{}'.format(strings['title'], self.file_name))
+                self.SetTitle('{}-{}'.format(strings['title'].format(version), self.file_name))
                 self.tc.SetValue(self.file_i)
             self.is_open = True
         except FileNotFoundError:
@@ -174,6 +179,10 @@ class MainFrame(wx.Frame):
         if not self.is_newfile_open:
             self.nf = NewFileFrame()
             self.is_newfile_open = True
+    
+    def run(self, event):
+        self.run_file_frame = RunFileFrame()
+        self.is_runfile_open = True
 
     # def FindShow(self, event):
     #     self.find_frame = FindFrame()
@@ -468,7 +477,7 @@ def translate(txt: str):
 
 class HotKeyFrame(wx.Frame):
     def __init__(self):
-        super().__init__(None, title=strings['hk'])
+        super().__init__(main_frame, title=strings['hk'])
         self.label = """1、退出:ALT+ESC  
 2、保存:ALT+方向键上  
 3、打开:ALT+方向键左
@@ -478,11 +487,31 @@ class HotKeyFrame(wx.Frame):
         box = wx.BoxSizer()
         box.Add(hotkey_st, proportion=1, flag=wx.EXPAND | wx.ALL, border=20)
         panel.SetSizer(box)
+        self.Center()
         self.Show()
+
     def close(self, event):
         main_frame.is_hotkeyzy_open = False
         self.Destroy()
         
+class RunFileFrame(wx.Frame):
+    def __init__(self):
+        super().__init__(main_frame, title=strings['run'])
+        panel = wx.Panel(self)
+        Terminal = wx.TextCtrl(panel, style=wx.TE_MULTILINE, value='Terminal output......')
+        Terminal.Enable(False)
+        vbox = wx.BoxSizer(wx.VERTICAL)
+        vbox.Add(Terminal, flag=wx.ALL | wx.EXPAND, border=5, proportion=1)
+        if not main_frame.is_open:
+            wx.MessageBox(strings['not-open'], strings['prompt'], wx.ICON_INFORMATION)
+        panel.SetSizer(vbox)
+        self.Center()
+        self.Show()
+
+        output = os.popen('python '+main_frame.file_path).read()
+        Terminal.SetValue(output)
+        Terminal.Enable()
+
 def EXIT():
     main_frame.Destroy()
     sys.exit()
